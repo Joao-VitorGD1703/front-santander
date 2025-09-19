@@ -11,6 +11,7 @@ const router = createRouter({
     // { path: '/:pathMatch(.*)*', component: () => import('../views/Notfound.vue') },
     // Rotas definidas
     { path: '/', component: () => import('../views/Dasheboard.vue') },
+    { path: '/dashboard', component: () => import('../views/Dasheboard.vue') },
     { path: '/chat', component: () => import('../views/Chat.vue') },
 
   ]
