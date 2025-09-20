@@ -1,16 +1,14 @@
 <template>
-    <div>
-      <Header />
-      <div class="w-full flex">
-        <Sidebar/>
-        <slot />
-      </div>
+  <div class="h-screen flex flex-col bg-gray-50">
+    <Header />
+    <div class="w-full flex flex-1 overflow-hidden">
+      <Sidebar/>
+      <slot />
     </div>
-  </template>
-  
-  <script setup>
+  </div>
+</template>
+
+<script setup>
 import Sidebar from '@/components/Sidebar.vue';
 import Header from '../components/Header.vue';
-  </script>
-  
-  
+</script>

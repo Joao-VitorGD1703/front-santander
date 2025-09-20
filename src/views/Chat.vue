@@ -1,35 +1,40 @@
 <template>
   <MainLayout>
-    <div class="chat-container">
-      <div class="w-full items-right flex justify-end ">
-        <button         
-          @click="handleNewChat"
-            class=
-              "flex items-center space-x-3 px-4 py-3 w-12 m-6  rounded-lg bg-red-100 text-red-600 font-semibold border"
-          >
-            <TrashIcon
-              class="w-5 h-5"
-            />
-      </button>
-      </div>
-      
-      <div class="messages flex-1 overflow-y-auto p-4">
-         
-     
+    <div class="chat-container ">
+   
+      <div class="messages flex-1 overflow-y-auto p-4 space-y-4">
         <div
           v-for="(message, index) in messages"
           :key="index"
-          class="flex mb-2"
+          class="flex items-end gap-2"
           :class="{ 'justify-end': message.sender === 'user' }"
         >
+          <div v-if="message.sender !== 'user'" class="flex-shrink-0">
+            <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
+              <Bot class="text-white w-5 h-5" />
+            </div>
+          </div>
+
           <div
             class="p-3 rounded-lg max-w-[70%] message-content"
-            :class="{
-              'bg-red-600 text-white': message.sender === 'user',
-              'bg-gray-300 text-gray-800': message.sender !== 'user',
+             :class="{
+              'bg-red-600 text-white order-2': message.sender === 'user',
+              'bg-gray-200 text-gray-800': message.sender !== 'user',
+              'prose': message.sender !== 'user' && !message.isLoading,
             }"
-            v-html="formatMessage(message)"
           >
+            <div v-if="message.isLoading" class="flex items-center justify-center space-x-1 p-2">
+              <div class="pulsing-dot"></div>
+              <div class="pulsing-dot animation-delay-200"></div>
+              <div class="pulsing-dot animation-delay-400"></div>
+            </div>
+             <div v-else v-html="formatMessage(message)"></div>
+          </div>
+
+          <div v-if="message.sender === 'user'" class="flex-shrink-0">
+            <div class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center">
+              <User class="text-white w-5 h-5" />
+            </div>
           </div>
         </div>
       </div>
@@ -39,50 +44,48 @@
 </template>
 
 <script setup>
-import { TrashIcon } from "lucide-vue-next";
+import { TrashIcon, User, Bot } from "lucide-vue-next";
 import InputMessage from "@/components/InputMessage.vue";
 import MainLayout from "@/layout/MainLayout.vue";
 import { ref, nextTick, onMounted } from "vue";
 import { marked } from 'marked';
 import * as XLSX from "xlsx";
 import { enviarDados, limparConversa } from '@/composables/request.js';
+import { saveFile, loadFile } from '@/composables/fileStorage.js';
 
 
 const uploadedFileData = ref(null);
-// --- ALTERAÇÃO MESCLADA: Inicia o array de mensagens como vazio ---
 const messages = ref([]); 
 const isLoading = ref(false);
 
-// --- ALTERAÇÃO MESCLADA: Lógica aprimorada para carregar o histórico ---
-// Carrega o histórico salvo quando o componente é montado
 onMounted(() => {
   const historicoSalvo = JSON.parse(localStorage.getItem('chatHistory')) || [];
+  const storedFile = loadFile();
   
   if (historicoSalvo.length > 0) {
-    // Se houver histórico, mapeia para o formato de exibição
     messages.value = historicoSalvo.map(item => ({
       text: item.parts[0].text,
       sender: item.role === 'user' ? 'user' : 'IA'
     }));
   } else {
-    // Se não houver histórico, adiciona apenas a mensagem inicial padrão
     messages.value = [
       { text: "Olá! Posso analisar um arquivo para você ou responder a uma pergunta.", sender: "IA" }
     ];
   }
+
+  if(storedFile){
+    uploadedFileData.value = storedFile;
+    messages.value.push({ text: "Notei que você já enviou um arquivo. O que você gostaria de saber sobre ele?", sender: "IA" });
+  }
+  
   scrollToBottom();
 });
 
-// Dentro do <script setup> do seu Chat.vue
-
 const handleNewChat = () => {
-  // 1. Chama a função para limpar o localStorage
   limparConversa(); 
-
-  // 2. Recarrega a página para reiniciar o estado do chat.
-  // Esta é a maneira mais simples e garantida de começar do zero.
   window.location.reload(); 
 };
+
 const formatMessage = (message) => {
   const textToRender = message.text || "";
   if (message.sender === 'IA') {
@@ -100,15 +103,20 @@ const scrollToBottom = () => {
   });
 };
 
-const streamResponseOnScreen = (fullText, targetMessage, speed = 30) => {
+const streamResponseOnScreen = (fullText, targetMessage, speed = 20) => {
   return new Promise((resolve) => {
-    const words = fullText.split(' ');
+    if (!fullText || !fullText.trim()) {
+      targetMessage.text = "Não foi possível obter uma resposta. Tente novamente.";
+      resolve();
+      return;
+    }
+
     let currentIndex = 0;
-    targetMessage.text = ''; // Limpa o texto "Analisando..."
+    targetMessage.text = '';
 
     const intervalId = setInterval(() => {
-      if (currentIndex < words.length) {
-        targetMessage.text += words[currentIndex] + ' ';
+      if (currentIndex < fullText.length) {
+        targetMessage.text += fullText[currentIndex];
         scrollToBottom();
         currentIndex++;
       } else {
@@ -119,12 +127,9 @@ const streamResponseOnScreen = (fullText, targetMessage, speed = 30) => {
   });
 };
 
-// Sua função handleSendMessage já está perfeita e não precisa de alterações.
-// Ela já chama o `enviarDados` que agora gerencia o histórico automaticamente.
 const handleSendMessage = async (messageData) => {
   if (isLoading.value) return;
 
-  // Lógica de upload de arquivo (com tratamento de erro melhorado)
   if (messageData.files && messageData.files.length > 0) {
     const file = messageData.files[0];
     messages.value.push({ text: `Arquivo "${file.name}" recebido. Processando...`, sender: "user" });
@@ -143,8 +148,8 @@ const handleSendMessage = async (messageData) => {
         throw new Error("O arquivo parece estar vazio ou em um formato não suportado.");
       }
 
+      saveFile(jsonData);
       uploadedFileData.value = jsonData;
-      console.log(uploadedFileData.value)
       messages.value.push({ text: `O arquivo "${file.name}" foi carregado com sucesso! Agora, me diga o que você gostaria de fazer com esses dados.`, sender: "IA" });
     
     } catch (error) {
@@ -166,8 +171,8 @@ const handleSendMessage = async (messageData) => {
     messages.value.push({ text: "Analisando arquivo...", sender: "user" });
   }
   
-  const aiMessageIndex = messages.value.length;
-  messages.value.push({ text: "Analisando...", sender: "IA" });
+  messages.value.push({ text: "", sender: "IA", isLoading: true });
+  const aiMessageIndex = messages.value.length - 1;
   scrollToBottom();
 
   const payload = {
@@ -176,18 +181,18 @@ const handleSendMessage = async (messageData) => {
   };
 
   try {
-    // ESTA CHAMADA ESTÁ CORRETA e usa o novo `request.js`
     const responseText = await enviarDados(payload); 
     console.log("Resposta da API:", responseText);
+    
     const targetMessage = messages.value[aiMessageIndex];
+    
+    targetMessage.isLoading = false;
     await streamResponseOnScreen(responseText, targetMessage);
 
-    if (payload.dados_json) {
-      uploadedFileData.value = null;
-    }
-
   } catch (error) {
-    messages.value[aiMessageIndex].text = "Desculpe, ocorreu um erro ao processar sua solicitação.";
+    const targetMessage = messages.value[aiMessageIndex];
+    targetMessage.isLoading = false;
+    targetMessage.text = "Desculpe, ocorreu um erro ao processar sua solicitação.";
   } finally {
     isLoading.value = false;
     scrollToBottom();
@@ -199,30 +204,48 @@ const handleSendMessage = async (messageData) => {
 .chat-container {
   display: flex;
   flex-direction: column;
-  /*border: 1px solid #ccc;*/
   width: 100%;
   margin: 0 auto;
   height: 82vh;
 }
 
-/* Seus estilos estão preservados */
-.message-content ul, .message-content ol {
-  padding-left: 20px;
-  margin-top: 5px;
-  margin-bottom: 5px;
+.pulsing-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #6b7280;
+  border-radius: 50%;
+  animation: pulse 1.4s infinite ease-in-out both;
 }
-.message-content a {
-  color: #007bff;
-  text-decoration: underline;
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
 }
-.message-content strong {
-  font-weight: bold;
+
+.animation-delay-400 {
+  animation-delay: 0.4s;
 }
-.message-content pre {
-  background-color: #f0f0f0;
-  padding: 10px;
-  border-radius: 5px;
-  white-space: pre-wrap;
-  word-wrap: break-word;
+
+@keyframes pulse {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1.0);
+  }
+}
+
+:deep(.prose) {
+  max-width: none;
+}
+
+:deep(.prose pre) {
+  background-color: #1f2937;
+  color: #d1d5db;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+:deep(.prose ul > li::before) {
+    background-color: #4b5563;
 }
 </style>

@@ -72,10 +72,13 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { marked } from 'marked';
 import * as XLSX from "xlsx";
 import { gerarDadosDashboard } from '@/composables/request2.js';
+import { limparConversa } from '@/composables/request.js'; // <-- IMPORTE A FUNÇÃO CENTRALIZADA
+import { saveFile, loadFile } from '@/composables/fileStorage.js';
+import { saveDashboard, loadDashboard } from '@/composables/dashboardStorage.js';
 import MainLayout from '@/layout/MainLayout.vue';
 import VueApexCharts from 'vue3-apexcharts';
 
@@ -87,16 +90,53 @@ const dashboardData = ref(null);
 const errorMessage = ref(null);
 const originalJsonData = ref(null);
 
+onMounted(() => {
+  const storedDashboard = loadDashboard();
+  if (storedDashboard) {
+    dashboardData.value = storedDashboard;
+    originalJsonData.value = loadFile();
+  } else {
+    const storedFile = loadFile();
+    if (storedFile) {
+      processData(storedFile);
+    }
+  }
+});
+
 const triggerFileInput = () => {
   fileInput.value.click();
+};
+
+const processData = async (jsonData) => {
+  if (!jsonData || jsonData.length === 0) {
+      errorMessage.value = "Os dados do arquivo parecem estar vazios ou em um formato inválido.";
+      return;
+  }
+
+  isLoading.value = true;
+  errorMessage.value = null;
+
+  try {
+    originalJsonData.value = jsonData;
+    const generatedData = await gerarDadosDashboard(jsonData);
+    dashboardData.value = generatedData;
+    saveFile(jsonData); 
+    saveDashboard(generatedData);
+
+  } catch (error) {
+    console.error("Erro no processo de geração do dashboard:", error);
+    errorMessage.value = error.message || "Não foi possível processar os dados para o dashboard.";
+    limparConversa(); // <-- CHAME A FUNÇÃO CENTRALIZADA EM CASO DE ERRO
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const handleFileUpload = async (event) => {
   const file = event.target.files[0];
   if (!file) return;
-
-  isLoading.value = true;
-  errorMessage.value = null;
+  
+  resetState();
 
   try {
     const data = await new Promise((resolve, reject) => {
@@ -109,19 +149,13 @@ const handleFileUpload = async (event) => {
     const workbook = XLSX.read(data, { type: "array" });
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
     const jsonData = XLSX.utils.sheet_to_json(worksheet);
-
-    if (jsonData.length === 0) {
-      throw new Error("O arquivo CSV parece estar vazio ou em um formato inválido.");
-    }
     
-    originalJsonData.value = jsonData;
-    dashboardData.value = await gerarDadosDashboard(jsonData);
+    await processData(jsonData);
 
   } catch (error) {
     console.error("Erro no processo de upload:", error);
     errorMessage.value = error.message || "Não foi possível processar o arquivo.";
   } finally {
-    isLoading.value = false;
     if (fileInput.value) fileInput.value.value = '';
   }
 };
@@ -138,6 +172,7 @@ const resetState = () => {
   errorMessage.value = null;
   isLoading.value = false;
   originalJsonData.value = null; 
+  limparConversa(); // <-- CHAME A FUNÇÃO CENTRALIZADA
 };
 
 function jsonToCsv(jsonArray) {
@@ -149,7 +184,7 @@ function jsonToCsv(jsonArray) {
 
   for (const row of jsonArray) {
     const values = headers.map(header => {
-      const escaped = ('' + row[header]).replace(/"/g, '""');
+      const escaped = ('' + (row[header] || '')).replace(/"/g, '""');
       return `"${escaped}"`;
     });
     csvRows.push(values.join(','));
