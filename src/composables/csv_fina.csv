@@ -1,0 +1,16 @@
+data,tipo,valor,participante,descricao,ID,VL_FATU,VL_SLDO,DT_ABRT,DS_CNAE,DT_REFE
+2025-10-04,investimento,-104190,Banco de Fomento Regional,Aplicação em fundo de investimento,14,95000000,330315,2005-01-20,6422-1/00 - Bancos múltiplos, com carteira comercial,2025-09-27
+2025-10-07,imposto,-42189,Impostos Governamentais,Pagamento de impostos ref. 10/2025,99,0,181387,N/A,N/A,2025-09-20
+2025-10-26,pagamento,-44217,Infraestrutura Cloud Segura,Pagamento de serviços de Infraestrutura Cloud Segura,12,8500000,868977,2017-11-01,6311-9/00 - Tratamento de dados, provedores de serviços de aplicação e serviços de hospedagem na internet,2025-09-26
+2025-11-01,imposto,-48589,Impostos Governamentais,Pagamento de impostos ref. 11/2025,99,0,814642,N/A,N/A,2025-10-17
+2025-11-02,recebimento,71310,Cliente Global Tech,Recebimento de fatura #139,11,12000000,302914,2015-08-22,6209-1/00 - Suporte técnico, manutenção e outros serviços em tecnologia da informação,2025-10-07
+2025-11-12,investimento,-143902,Banco de Fomento Regional,Aplicação em fundo de investimento,14,95000000,882235,2005-01-20,6422-1/00 - Bancos múltiplos, com carteira comercial,2025-10-21
+2025-11-19,imposto,-38757,Impostos Governamentais,Pagamento de impostos ref. 11/2025,99,0,225685,N/A,N/A,2025-11-01
+2025-11-23,imposto,-59650,Impostos Governamentais,Pagamento de impostos ref. 11/2025,99,0,839866,N/A,N/A,2025-11-08
+2025-12-15,recebimento,122065,Soluções Digitais Veloce,Recebimento de fatura #136,10,5500000,323726,2019-03-15,6201-5/01 - Desenvolvimento de programas de computador sob encomenda,2025-12-04
+2025-12-15,investimento,-116872,Banco de Fomento Regional,Aplicação em fundo de investimento,14,95000000,538572,2005-01-20,6422-1/00 - Bancos múltiplos, com carteira comercial,2025-11-19
+2026-01-02,imposto,-27060,Impostos Governamentais,Pagamento de impostos ref. 01/2026,99,0,432523,N/A,N/A,2025-12-05
+2026-01-02,credito,117260,Banco de Fomento Regional,Aporte de crédito para capital de giro,14,95000000,303628,2005-01-20,6422-1/00 - Bancos múltiplos, com carteira comercial,2025-12-25
+2026-01-10,recebimento,77485,Soluções Digitais Veloce,Recebimento de fatura #162,10,5500000,728256,2019-03-15,6201-5/01 - Desenvolvimento de programas de computador sob encomenda,2025-12-22
+2026-01-11,recebimento,59917,Soluções Digitais Veloce,Recebimento de fatura #174,10,5500000,409875,2019-03-15,6201-5/01 - Desenvolvimento de programas de computador sob encomenda,2025-12-23
+2026-01-29,pagamento,-38653,Consultoria Delta,Pagamento de serviços de Consultoria Delta,13,3200000,341640,2020-02-10,7020-4/00 - Atividades de consultoria em gestão empresarial,2025-12-31

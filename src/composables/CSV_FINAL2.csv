@@ -1,0 +1,51 @@
+nome_empresa_pagadora,nome_empresa_receptora,VL,DS_TRAN,DT_REFE
+Lambda Metais,Xi Tecnologia,159578,PIX,2025-09-01
+Epsilon Energia,Gama Construtora,42602,PIX,2025-09-01
+Zeta Farma,Lambda Metais,59217,TED,2025-09-10
+Alpha Logística,Epsilon Energia,63990,BOLETO,2025-09-11
+Xi Tecnologia,Alpha Logística,181299,PIX,2025-09-17
+Beta Mercantil,Zeta Farma,116986,PIX,2025-09-18
+Epsilon Energia,Gama Construtora,37784,BOLETO,2025-09-21
+Nu Varejo,Eta Comércio Digital,243017,PIX,2025-09-21
+Lambda Metais,Grupo Ômega Holding,214041,TED,2025-09-24
+Zeta Farma,Alpha Logística,44916,TED,2025-09-25
+Lambda Metais,Beta Mercantil,65512,PIX,2025-09-25
+Gama Construtora,Beta Mercantil,159058,TED,2025-09-27
+Iota Transportes,Mu Consultoria,100994,TED,2025-09-28
+Eta Comércio Digital,Delta Alimentos,147177,BOLETO,2025-09-30
+Lambda Metais,Eta Comércio Digital,208660,PIX,2025-09-30
+Gama Construtora,Mu Consultoria,100714,TED,2025-10-03
+Nu Varejo,Iota Transportes,197830,BOLETO,2025-10-03
+Beta Mercantil,Zeta Farma,28205,BOLETO,2025-10-05
+Xi Tecnologia,Mu Consultoria,214413,SISTEMICO,2025-10-07
+Lambda Metais,Eta Comércio Digital,114339,SISTEMICO,2025-10-08
+Eta Comércio Digital,Grupo Ômega Holding,39322,PIX,2025-10-09
+Mu Consultoria,Xi Tecnologia,90289,TED,2025-10-09
+Epsilon Energia,Lambda Metais,75918,SISTEMICO,2025-10-10
+Zeta Farma,Alpha Logística,8926,PIX,2025-10-12
+Kappa Sistemas,Xi Tecnologia,125999,PIX,2025-10-15
+Grupo Ômega Holding,Zeta Farma,750000,SISTEMICO,2025-10-20
+Alpha Logística,Mu Consultoria,156506,BOLETO,2025-10-23
+Eta Comércio Digital,Alpha Logística,127238,PIX,2025-10-27
+Theta Têxtil,Iota Transportes,220884,SISTEMICO,2025-10-29
+Epsilon Energia,Iota Transportes,99928,BOLETO,2025-11-04
+Zeta Farma,Alpha Logística,16967,PIX,2025-11-08
+Lambda Metais,Grupo Ômega Holding,36819,BOLETO,2025-11-10
+Kappa Sistemas,Grupo Ômega Holding,222622,SISTEMICO,2025-11-13
+Grupo Ômega Holding,Mu Consultoria,78631,PIX,2025-11-16
+Beta Mercantil,Lambda Metais,182592,SISTEMICO,2025-11-23
+Eta Comércio Digital,Theta Têxtil,205617,BOLETO,2025-11-23
+Nu Varejo,Theta Têxtil,241246,PIX,2025-11-25
+Nu Varejo,Lambda Metais,22602,SISTEMICO,2025-11-30
+Alpha Logística,Beta Mercantil,30242,BOLETO,2025-11-30
+Zeta Farma,Alpha Logística,2500,PIX,2025-12-05
+Beta Mercantil,Grupo Ômega Holding,229086,BOLETO,2025-12-10
+Iota Transportes,Grupo Ômega Holding,206230,SISTEMICO,2025-12-13
+Delta Alimentos,Epsilon Energia,94305,BOLETO,2025-12-15
+Delta Alimentos,Nu Varejo,158561,PIX,2025-12-16
+Epsilon Energia,Grupo Ômega Holding,244002,SISTEMICO,2025-12-21
+Epsilon Energia,Theta Têxtil,61257,SISTEMICO,2025-12-22
+Theta Têxtil,Eta Comércio Digital,168122,TED,2025-12-24
+Gama Construtora,Theta Têxtil,54704,SISTEMICO,2025-12-25
+Eta Comércio Digital,Epsilon Energia,30440,BOLETO,2025-12-27
+Gama Construtora,Alpha Logística,30554,PIX,2025-12-28

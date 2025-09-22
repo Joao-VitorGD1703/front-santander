@@ -1,0 +1,10 @@
+data,tipo,valor,participante,descricao,ID,VL_FATU,VL_SLDO,DT_ABRT,DS_CNAE,DT_REFE
+2025-05-10,recebimento,85000,Cliente Fiel Corp,Pagamento por serviços de software.,2,246551205,85000,2020-11-19,6201-5/01 - Desenvolvimento de programas de computador sob encomenda,2025-03-03
+2025-05-25,pagamento,-35000,Fornecedor Principal SA,Compra de componentes eletrônicos.,0,28979532,50000,2018-01-19,4652-4/00 - Comércio atacadista de componentes eletrônicos e equipamentos de telefonia e comunicação,2025-03-27
+2025-06-12,recebimento,110000,Cliente Fiel Corp,Pagamento por desenvolvimento de sistema.,2,246551205,160000,2020-11-19,6201-5/01 - Desenvolvimento de programas de computador sob encomenda,2025-05-25
+2025-06-20,credito,200000,Banco Investe Mais,Crédito para aquisição de maquinário novo.,5,94332335,360000,2009-10-19,"6422-1/00 - Bancos múltiplos, com carteira comercial",2025-05-23
+2025-07-05,pagamento,-60000,Salários Funcionários,Folha de pagamento.,6,146499236,300000,2008-05-31,N/A,2025-01-26
+2025-07-15,recebimento,150000,Novo Grande Cliente,Primeiro pagamento de contrato grande.,3,141191302,450000,2011-08-19,6201-5/01 - Desenvolvimento de programas de computador sob encomenda,2025-02-25
+2025-07-26,pagamento,-55000,Fornecedor Principal SA,Aumento de pedido de componentes.,0,28979532,395000,2018-01-19,4652-4/00 - Comércio atacadista de componentes eletrônicos e equipamentos de telefonia e comunicação,2025-05-30
+2025-08-01,investimento,-25000,Corretora de Ativos,Investimento em CDB de liquidez diária.,7,55729631,370000,2004-03-23,6612-6/01 - Corretoras de títulos e valores mobiliários,2025-02-24
+2025-08-15,recebimento,165000,Novo Grande Cliente,Segundo pagamento do contrato.,3,141191302,535000,2011-08-19,6201-5/01 - Desenvolvimento de programas de computador sob encomenda,2025-01-20

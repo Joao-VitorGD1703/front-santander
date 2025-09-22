@@ -1,0 +1,51 @@
+nome_empresa_pagadora,nome_empresa_receptora,VL,DS_TRAN,DT_REFE
+Iota Transportes,Grupo Ômega Holding,778652,BOLETO,2025-09-05
+Theta Têxtil,Gama Construtora,5264,BOLETO,2025-09-07
+Mu Consultoria,Kappa Sistemas,16252,SISTEMICO,2025-09-08
+Theta Têxtil,Mu Consultoria,11457,PIX,2025-09-12
+Epsilon Energia,Xi Tecnologia,60658,SISTEMICO,2025-09-16
+Gama Construtora,Xi Tecnologia,38520,PIX,2025-09-20
+Grupo Ômega Holding,Eta Comércio Digital,347076,TED,2025-09-21
+Grupo Ômega Holding,Epsilon Energia,942056,PIX,2025-09-27
+Zeta Farma,Grupo Ômega Holding,901014,BOLETO,2025-09-28
+Delta Alimentos,Eta Comércio Digital,83596,PIX,2025-09-29
+Grupo Ômega Holding,Kappa Sistemas,357909,BOLETO,2025-10-02
+Mu Consultoria,Iota Transportes,61851,PIX,2025-10-05
+Epsilon Energia,Nu Varejo,14330,PIX,2025-10-05
+Eta Comércio Digital,Zeta Farma,71864,TED,2025-10-06
+Grupo Ômega Holding,Xi Tecnologia,814092,PIX,2025-10-08
+Gama Construtora,Epsilon Energia,69666,TED,2025-10-10
+Grupo Ômega Holding,Iota Transportes,795967,PIX,2025-10-13
+Mu Consultoria,Epsilon Energia,60535,TED,2025-10-19
+Lambda Metais,Theta Têxtil,77850,PIX,2025-10-19
+Nu Varejo,Mu Consultoria,31182,BOLETO,2025-10-22
+Nu Varejo,Grupo Ômega Holding,501889,SISTEMICO,2025-10-25
+Epsilon Energia,Mu Consultoria,18832,TED,2025-10-25
+Grupo Ômega Holding,Iota Transportes,417476,SISTEMICO,2025-10-26
+Iota Transportes,Delta Alimentos,53435,TED,2025-10-26
+Delta Alimentos,Lambda Metais,45047,BOLETO,2025-11-01
+Gama Construtora,Epsilon Energia,13449,PIX,2025-11-05
+Eta Comércio Digital,Grupo Ômega Holding,623669,TED,2025-11-07
+Grupo Ômega Holding,Nu Varejo,970158,SISTEMICO,2025-11-12
+Xi Tecnologia,Mu Consultoria,69621,BOLETO,2025-11-13
+Nu Varejo,Xi Tecnologia,47336,SISTEMICO,2025-11-13
+Grupo Ômega Holding,Eta Comércio Digital,477021,PIX,2025-11-14
+Theta Têxtil,Delta Alimentos,53852,TED,2025-11-17
+Alpha Logística,Grupo Ômega Holding,449398,TED,2025-11-18
+Grupo Ômega Holding,Epsilon Energia,794228,TED,2025-11-22
+Eta Comércio Digital,Xi Tecnologia,73960,SISTEMICO,2025-11-28
+Zeta Farma,Grupo Ômega Holding,342735,TED,2025-11-29
+Mu Consultoria,Epsilon Energia,2107,SISTEMICO,2025-12-01
+Grupo Ômega Holding,Delta Alimentos,300156,SISTEMICO,2025-12-03
+Delta Alimentos,Nu Varejo,14634,TED,2025-12-08
+Grupo Ômega Holding,Theta Têxtil,841260,BOLETO,2025-12-11
+Grupo Ômega Holding,Delta Alimentos,843898,BOLETO,2025-12-14
+Grupo Ômega Holding,Delta Alimentos,779448,SISTEMICO,2025-12-14
+Lambda Metais,Grupo Ômega Holding,784479,PIX,2025-12-20
+Iota Transportes,Grupo Ômega Holding,392892,PIX,2025-12-20
+Nu Varejo,Epsilon Energia,35959,BOLETO,2025-12-24
+Lambda Metais,Zeta Farma,89776,BOLETO,2025-12-24
+Kappa Sistemas,Eta Comércio Digital,74619,PIX,2025-12-25
+Grupo Ômega Holding,Alpha Logística,891619,PIX,2025-12-25
+Epsilon Energia,Xi Tecnologia,41944,SISTEMICO,2025-12-27
+Delta Alimentos,Gama Construtora,17720,BOLETO,2025-12-28
