@@ -1,14 +1,11 @@
-// src/composables/request.js
-
-import axios from 'axios';
+// src/composables/request2.js
+import axios from "axios";
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-// Em src/composables/request2.js
+// Usando a URL e modelo que você validou com o curl
+const API_URL = `/api/v1beta/models/gemini-pro-latest:generateContent?key=${API_KEY}`;
 
-// Em src/composables/request2.js
-
-const PROMPT_INSTRUCOES_DASHBOARD = `
+const PROMPT_INSTRUCOES_DASHBOARD =  `
 Você é um assistente de IA especialista em ciência de dados e análise financeira. Sua tarefa é analisar um conjunto de dados financeiros (em JSON) de uma empresa e gerar um objeto JSON completo para popular um dashboard.
 
 O JSON de saída DEVE ter EXATAMENTE a seguinte estrutura, com configurações ApexCharts VÁLIDAS:
@@ -66,60 +63,93 @@ Este relatório analisa o fluxo de caixa da empresa com base nos dados fornecido
 4.  Garanta que o JSON seja estritamente válido, sem vírgulas extras no final de listas ou objetos e com todas as strings entre aspas duplas.
 `;
 
+
 /**
- * Função especializada para chamar a IA e gerar o JSON completo do dashboard.
- * @param {object} dadosJson - Os dados extraídos do CSV do usuário.
- * @returns {Promise<object>} - O objeto JSON com todos os dados do dashboard.
+ * Converte um objeto onde algumas chaves são strings de funções JavaScript
+ * em um objeto com funções reais e executáveis.
+ * @param {object} obj O objeto a ser percorrido.
+ * @returns {object} O objeto com as funções convertidas.
  */
-// Em src/composables/request2.js
+function converterFuncoesApex(obj) {
+  if (Array.isArray(obj)) {
+    return obj.map(converterFuncoesApex);
+  } else if (obj && typeof obj === "object") {
+    const novoObj = {};
+    for (const key in obj) {
+      if (typeof obj[key] === "string" && obj[key].trim().startsWith("function")) {
+        try {
+          // Usa o construtor Function para converter a string em uma função real.
+          // eslint-disable-next-line no-new-func
+          novoObj[key] = new Function("return " + obj[key])();
+        } catch (e) {
+          console.error(`Erro ao converter a função da chave "${key}":`, e);
+          novoObj[key] = obj[key]; // Mantém a string original em caso de erro
+        }
+      } else {
+        novoObj[key] = converterFuncoesApex(obj[key]);
+      }
+    }
+    return novoObj;
+  }
+  return obj;
+}
+
+/**
+ * Extrai um objeto JS de uma string de texto, mesmo que seja JSON inválido
+ * por conter funções.
+ * @param {string} texto - A string retornada pela API.
+ * @returns {object} - O objeto JavaScript.
+ */
+function extrairObjetoJS(texto) {
+  const jsonMatch = texto.match(/```json\s*([\s\S]*?)\s*```/);
+  let textoParaParse = jsonMatch ? jsonMatch[1] : texto;
+
+  try {
+    // Esta é a mágica: em vez de JSON.parse, usamos new Function para
+    // interpretar a string como um objeto JavaScript literal, que permite funções.
+    return new Function("return " + textoParaParse)();
+  } catch (error) {
+    console.error("Falha ao fazer o parse do objeto JS:", textoParaParse);
+    throw new Error("A IA retornou um objeto em formato inválido.");
+  }
+}
 
 export async function gerarDadosDashboard(dadosJson) {
   if (!API_KEY) {
-      throw new Error("Chave de API do Gemini não encontrada. Verifique seu arquivo .env.");
+    throw new Error("Chave de API do Gemini não encontrada.");
   }
-  
-  const promptParaIA = `
-      **Dados para Análise (JSON):**
-      \`\`\`json
-      ${JSON.stringify(dadosJson, null, 2)}
-      \`\`\`
+
+  const promptCompletoParaIA = `
+${PROMPT_INSTRUCOES_DASHBOARD}
+
+---
+**Dados para Análise (fornecidos pelo usuário):**
+${JSON.stringify(dadosJson, null, 2)}
   `;
 
   const geminiPayload = {
-      contents: [{ role: 'user', parts: [{ text: promptParaIA }] }],
-      systemInstruction: {
-          parts: [{ text: PROMPT_INSTRUCOES_DASHBOARD }]
-      },
-      generationConfig: {
-          responseMimeType: "application/json",
-      }
+    contents: [{ role: "user", parts: [{ text: promptCompletoParaIA }] }],
   };
 
   try {
-      const resp = await axios.post(API_URL, geminiPayload);
-      let respostaIA = resp.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    const resp = await axios.post(API_URL, geminiPayload);
+    const respostaIA = resp.data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-      if (!respostaIA) {
-          throw new Error("A API retornou uma resposta vazia.");
-      }
-      
-      // --- ADIÇÕES PARA ROBUSTEZ ---
-      // 1. Log para depuração: veja exatamente o que a IA retornou
-      console.log("Raw API Response:", respostaIA);
+    if (!respostaIA) {
+      throw new Error("A API retornou uma resposta vazia ou malformada.");
+    }
 
-      // 2. Limpeza da string: remove os blocos de código ```json ... ``` se existirem
-      const jsonMatch = respostaIA.match(/```json\s*([\s\S]*?)\s*```/);
-      if (jsonMatch && jsonMatch[1]) {
-          respostaIA = jsonMatch[1];
-      }
+    console.log("Resposta bruta da IA:", respostaIA);
 
-      // 3. Tenta fazer o parse da string limpa
-      return JSON.parse(respostaIA);
+    // 1. Extrai o objeto JavaScript da string
+    const dashboardDataRaw = extrairObjetoJS(respostaIA);
 
+    // 2. Converte as strings de funções para funções reais do ApexCharts
+    const dashboardDataFinal = converterFuncoesApex(dashboardDataRaw);
+
+    return dashboardDataFinal;
   } catch (error) {
-      // Loga o erro de parse ou de rede
-      console.error("Erro detalhado da API ao gerar dashboard:", error.message);
-      // Lança um novo erro mais amigável para a interface
-      throw new Error("Falha na comunicação com a IA para gerar o dashboard.");
+    console.error("Erro detalhado:", error);
+    throw new Error("Falha na comunicação ou no processamento da resposta da IA.");
   }
 }

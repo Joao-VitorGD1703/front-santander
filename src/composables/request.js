@@ -1,14 +1,13 @@
 // src/composables/request.js
 
-import axios from 'axios';
-import { clearFile } from './fileStorage';
-import { clearDashboard } from './dashboardStorage.js'; // <-- ADICIONE ESTA LINHA
+import axios from "axios";
+import { clearFile } from "./fileStorage";
+import { clearDashboard } from "./dashboardStorage.js";
 
 // --- CONFIGURAÇÃO DA API E INSTRUÇÕES DO SISTEMA ---
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-
-
+// Corrigido: rota precisa ser v1beta
+const API_URL = `/api/v1beta/models/gemini-pro-latest:generateContent?key=${API_KEY}`;
 
 const PROMPT_INSTRUCOES_ANALISE = `
 Você é um assistente de IA especialista em ciência de dados e análise financeira para o setor bancário. Seja objetivo e profissional.
@@ -35,80 +34,98 @@ Sua análise se adapta automaticamente à estrutura dos dados fornecidos.
 Vá direto ao ponto e entregue a análise solicitada.
 `;
 
-
 // --- GERENCIAMENTO DO HISTÓRICO ---
-
 function carregarHistorico() {
-    try {
-        const historicoSalvo = localStorage.getItem('chatHistory');
-        return historicoSalvo ? JSON.parse(historicoSalvo) : [];
-    } catch (e) {
-        console.error("Erro ao carregar o histórico:", e);
-        return [];
-    }
+  try {
+    const historicoSalvo = localStorage.getItem("chatHistory");
+    return historicoSalvo ? JSON.parse(historicoSalvo) : [];
+  } catch (e) {
+    console.error("Erro ao carregar o histórico:", e);
+    return [];
+  }
 }
 
 function salvarHistorico(historico) {
-    localStorage.setItem('chatHistory', JSON.stringify(historico));
+  localStorage.setItem("chatHistory", JSON.stringify(historico));
 }
 
 // --- FUNÇÕES EXPORTADAS ---
-
 export async function enviarDados(payload) {
-    if (!API_KEY) {
-        throw new Error("Chave de API do Gemini não encontrada. Verifique seu arquivo .env.");
+  if (!API_KEY) {
+    throw new Error(
+      "Chave de API do Gemini não encontrada. Verifique seu arquivo .env."
+    );
+  }
+
+  const historico = carregarHistorico();
+
+  let promptUsuario =
+    payload.pergunta ||
+    "Analise os dados fornecidos e gere um relatório completo.";
+
+  if (payload.dados_json) {
+    const dadosParaAnalise = JSON.stringify(payload.dados_json, null, 2);
+    promptUsuario = `
+**Pergunta do Usuário:** "${promptUsuario}"
+
+**Dados para Análise (enviados nesta mensagem):**
+${dadosParaAnalise}
+    `;
+  }
+
+  // Montamos o payload para a API do Gemini
+  const geminiPayload = {
+    contents: [
+      { role: "user", parts: [{ text: PROMPT_INSTRUCOES_ANALISE }] },
+      {
+        role: "model",
+        parts: [
+          { text: "Entendido. Estou pronto para analisar os dados financeiros." },
+        ],
+      },
+      ...historico,
+      { role: "user", parts: [{ text: promptUsuario }] },
+    ],
+  };
+
+  try {
+    const resp = await axios.post(API_URL, geminiPayload, {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const respostaIA =
+      resp.data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
+
+    if (!respostaIA) {
+      throw new Error("A API retornou uma resposta vazia ou em formato inesperado.");
     }
 
-    const historico = carregarHistorico();
+    const userDisplayMessage =
+      payload.pergunta || "Análise do arquivo enviado";
 
-    let promptParaIA = payload.pergunta || 'Analise os dados fornecidos.';
-    if (payload.dados_json) {
-        const dadosParaAnalise = JSON.stringify(payload.dados_json, null, 2);
-        promptParaIA = `
-            **Pergunta do Usuário:** "${promptParaIA}"
-            **Dados para Análise (enviados nesta mensagem):**
-            \`\`\`json
-            ${dadosParaAnalise}
-            \`\`\`
-        `;
-    }
-    const novaMensagemUsuarioParaAPI = { role: 'user', parts: [{ text: promptParaIA }] };
+    historico.push({ role: "user", parts: [{ text: userDisplayMessage }] });
+    historico.push({ role: "model", parts: [{ text: respostaIA }] });
 
-    const geminiPayload = {
-        contents: [...historico, novaMensagemUsuarioParaAPI],
-        systemInstruction: {
-            parts: [{ text: PROMPT_INSTRUCOES_ANALISE }]
-        }
-    };
+    salvarHistorico(historico);
 
-    try {
-        const resp = await axios.post(API_URL, geminiPayload);
-        const respostaIA = resp.data?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-        if (!respostaIA) {
-            throw new Error("A API retornou uma resposta em formato inesperado.");
-        }
-
-        const userDisplayMessage = payload.pergunta || 'Análise de arquivo';
-        historico.push({ role: 'user', parts: [{ text: userDisplayMessage }] });
-        historico.push({ role: 'model', parts: [{ text: respostaIA }] });
-
-        salvarHistorico(historico);
-
-        return respostaIA;
-
-    } catch (error) {
-        console.error("Erro detalhado da API:", error.response?.data || error.message);
-        throw new Error("Falha na comunicação com a IA.");
-    }
+    return respostaIA;
+  } catch (error) {
+    console.error(
+      "Erro detalhado da API:",
+      error.response?.data || error.message || error
+    );
+    throw new Error(
+      "Falha na comunicação com a IA. Verifique o console para mais detalhes."
+    );
+  }
 }
 
 /**
  * Limpa todos os dados da sessão: histórico, arquivo e dashboard.
  */
 export function limparConversa() {
-    localStorage.removeItem('chatHistory');
-    clearFile();
-    clearDashboard(); // <-- ADICIONE ESTA LINHA
-    console.log("Todos os históricos (chat, arquivo e dashboard) foram limpos.");
+  localStorage.removeItem("chatHistory");
+  clearFile();
+  clearDashboard();
+  console.log("Todos os históricos (chat, arquivo e dashboard) foram limpos.");
 }

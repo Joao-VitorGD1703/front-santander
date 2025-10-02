@@ -1,0 +1,14 @@
+# Dependências que são instaladas dentro do container
+node_modules
+
+# Pasta de build/dist, que é gerada dentro do container
+dist
+
+# Logs e arquivos de ambiente locais
+.env
+.env.local
+npm-debug.log
+
+# Diretórios de ferramentas e versionamento
+.vscode
+.git

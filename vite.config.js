@@ -17,7 +17,7 @@ export default defineConfig({
       '/api': {
         target: 'https://generativelanguage.googleapis.com',
         changeOrigin: true,
-        secure: false,
+        secure: false, // Pode ser útil em alguns ambientes
         rewrite: (path) => path.replace(/^\/api/, ''), // Remove /api antes de enviar
       },
     },
